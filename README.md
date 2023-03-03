@@ -29,3 +29,7 @@ For the faces stuff to work you will need to follow this comment [here](https://
 ## Improvements
 
 This could be a lot more sophisticated and allow for multiple aspects to be changed simultaniously and selection of image sets for faces or led pattern sets rather than flip flow between two option or cycle through many.
+
+## Additional plugins
+
+I've also started adding my modified plugins to installed-plugins here too.  Currently telegram.py with additional functionality.
