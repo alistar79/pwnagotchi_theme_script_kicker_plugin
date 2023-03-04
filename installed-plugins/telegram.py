@@ -76,19 +76,41 @@ class Telegram(plugins.Plugin):
         bot = telegram.Bot(self.options['bot_token'])
         updates = bot.get_updates()
         try:
-            with open('/root/.tmid', 'r') as f:
-                message_id = int(f.read().replace('\n', ''))
+            with open('/root/.tuid', 'r') as f:
+                update_id = int(f.read().replace('\n', ''))
         except Exception:
-            message_id = 0
+            update_id = 0
         try:
-            message = updates[message_id].message.text
+            message = updates[update_id].message.text
+            msg_id = updates[update_id].message.message_id
+            logging.info('[telegram] Received message ID: %d', msg_id)
+            try:
+                with open('/root/.tmid', 'r') as f:
+                    last_msg_id = int(f.read().replace('\n', ''))
+            except:
+                last_msg_id = -1
+            if msg_id > last_msg_id:
+                with open('/root/.tmid', 'w') as f:
+                    f.write('%d\n' % msg_id)
+            else:
+                update_id +=1
+                with open('/root/.tuid', 'w') as f:
+                    f.write('%d\n' % update_id)
+                raise Exception("Old message")
         except:
-            pass
+            if update_id != 0:
+                try:
+                    message = updates[update_id-1].message.text
+                except:
+                    update_id = 0
+                    with open('/root/.tuid', 'w') as f:
+                        f.write('%d\n' % update_id)
+                
         else:
             logging.info('[telegram] Recevied message: %s', message)
-            message_id +=1
-            with open('/root/.tmid', 'w') as f:
-                f.write('%d\n' % message_id)
+            update_id +=1
+            with open('/root/.tuid', 'w') as f:
+                f.write('%d\n' % update_id)
             if message == "/start":
                 repmessage = """
 (⌐■_■) Pwnagotchi Telegram Bot (⌐■_■)
